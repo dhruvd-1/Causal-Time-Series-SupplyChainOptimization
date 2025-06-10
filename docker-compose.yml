@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  supply-chain-analysis:
+    build: .
+    container_name: supply_chain_optimizer
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+      - ./models:/app/models
+    environment:
+      - PYTHONPATH=/app
+      - LOG_LEVEL=INFO
+    command: python main.py
+    
+  jupyter:
+    build: .
+    container_name: supply_chain_jupyter
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./:/app
+    environment:
+      - PYTHONPATH=/app
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+    
+  postgres:
+    image: postgres:13
+    container_name: supply_chain_db
+    environment:
+      - POSTGRES_DB=supply_chain
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
